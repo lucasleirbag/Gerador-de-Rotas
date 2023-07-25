@@ -1,0 +1,4 @@
+googlemaps
+PyQt5
+pandas
+xlsxwriter
