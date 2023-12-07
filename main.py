@@ -9,7 +9,7 @@ import subprocess
 import sys
 import os
 
-chave_api = 'AIzaSyALZGyVtICuk8rlvPcWXH_IBngvZbzLvrc'
+chave_api = ''
 
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
