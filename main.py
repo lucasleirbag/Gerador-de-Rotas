@@ -52,7 +52,7 @@ class Worker(QThread):
             else:
                 resultado.append(('N/A', 'N/A')) 
                 links_google_maps.append('')
-            self.progressSignal.emit(int((i+1)*100/total))  # Corrigido para enviar um valor inteiro
+            self.progressSignal.emit(int((i+1)*100/total))
         self.finishSignal.emit(resultado, self.destinos, links_google_maps)
 
 class App(QWidget):
@@ -65,7 +65,6 @@ class App(QWidget):
         self.setWindowTitle(self.title)
         self.setGeometry(800, 450, 400, 300)
 
-        # Defina o ícone da janela da aplicação
         icon_path = resource_path('rota.ico')
         self.setWindowIcon(QIcon(icon_path))
 
@@ -73,16 +72,15 @@ class App(QWidget):
         self.setLayout(layout)
 
         self.entrada_cidade = QLineEdit(self)
-        self.completer = QCompleter(cidades)  # Usa a lista de cidades carregada previamente
+        self.completer = QCompleter(cidades)
         self.completer.setCaseSensitivity(Qt.CaseInsensitive)  
         self.entrada_cidade.setCompleter(self.completer)  
         self.entrada_cidade.textChanged.connect(self.atualizar_uf)
         layout.addWidget(QLabel("Cidade Origem:"))
         layout.addWidget(self.entrada_cidade)
 
-        # Muda para QComboBox
         self.entrada_uf = QComboBox(self)
-        self.entrada_uf.addItems(ufs)  # Preenche com UF's
+        self.entrada_uf.addItems(ufs)
         layout.addWidget(QLabel("UF Origem:"))
         layout.addWidget(self.entrada_uf)
 
@@ -91,7 +89,6 @@ class App(QWidget):
         layout.addWidget(QLabel("Modo de Transporte:"))
         layout.addWidget(self.entrada_modo)
 
-        # dentro da função initUI
         layout_estado_especifico = QHBoxLayout()
         self.estado_especifico = QCheckBox(self)
         layout_estado_especifico.addWidget(self.estado_especifico)
@@ -102,7 +99,7 @@ class App(QWidget):
         layout.addLayout(layout_estado_especifico)
 
         self.progresso = QProgressBar(self)
-        self.progresso.hide()  # Esconde a barra de progresso inicialmente
+        self.progresso.hide()
         layout.addWidget(self.progresso)
 
         self.botao = QPushButton("Pesquisar", self)
@@ -127,11 +124,10 @@ class App(QWidget):
     def pesquisar_distancia(self):
         self.progresso.show()  # Mostra a barra de progresso antes de iniciar a thread
         cidade_origem = self.entrada_cidade.text()
-        uf_origem = self.entrada_uf.currentText()  # Linha corrigida
+        uf_origem = self.entrada_uf.currentText()
         origem = [f"{cidade_origem}, {uf_origem}, Brazil"]
         modo = self.entrada_modo.currentText()
 
-        # Verifica se a opção "Estado Específico" está marcada
         if self.estado_especifico.isChecked():
             estado_especifico = self.valor_estado_especifico.currentText()
             destinos = [(cidade, estado_especifico) for cidade in cidades_por_estado[estado_especifico]]
@@ -147,17 +143,14 @@ class App(QWidget):
         with xlsxwriter.Workbook('resultado.xlsx') as workbook:
             worksheet = workbook.add_worksheet()
 
-            # Defina a largura das colunas
             worksheet.set_column('A:E', 20)
 
-            # Adicione os nomes das colunas
             worksheet.write(0, 0, "Cidade")
             worksheet.write(0, 1, "UF")
             worksheet.write(0, 2, "Distância")
             worksheet.write(0, 3, "Duração")
             worksheet.write(0, 4, "Link")
             
-            # Comece a escrever os dados na segunda linha (índice 1)
             for i, ((distancia, duracao), (cidade, uf), link) in enumerate(zip(resultado, destinos, links_google_maps), start=1):
                 worksheet.write(i, 0, cidade)
                 worksheet.write(i, 1, uf)
